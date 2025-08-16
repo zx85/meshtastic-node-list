@@ -18,6 +18,8 @@
                 {% for h in headers %}
                     {% if h == "N" %}
                         <th></th>
+                    {% elif h == "User" %}
+                        <th>Name</th>
                     {% elif h == "Latitude" %}
                         <th class="td-center">Lat</th>
                     {% elif h == "Longitude" %}
@@ -26,6 +28,8 @@
                         <th class="td-center">Alt</th>
                     {% elif h == "Battery" %}
                         <th class="td-center">🔋</th>
+                    {% elif h == "LastHeard" %}
+                        <th class="td-center">Last Heard</th>
                     {% elif h in ['AKA','Role','Dist','SNR','Hops','Since'] %}
                         <th class="td-center">{{ h }}</th>
                     {% else %}
@@ -35,7 +39,7 @@
             </tr>
         </thead>
         <tbody>
-            {% set center_indexes = [0,2,5,6,7,8,11,13] %}
+            {% set center_indexes = [0,2,5,6,7,8,11,12] %}
             {% for row in data %}
             <tr>
                 {% for idx, cell in enumerate(row) %}
@@ -94,8 +98,6 @@
                             <span class="badge role-other">
                         {% endif %}
                         {{ cell }}</span></td>
-                    {% elif headers[idx] == "Since" %}
-                        <td class="td-center">{{ cell.replace(' ago', '') }}</td>
                     {% else %}
                         <td class="{{ cell_class }}">{{ cell.replace('N/A', '<span class="badge role-na">') }}</td>
                     {% endif %}

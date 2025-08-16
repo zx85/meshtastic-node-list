@@ -27,7 +27,7 @@ last_loaded = 0
 CACHE_TIMEOUT = 60  # seconds
 
 # Get the other environment variables
-node_data_file = os.environ.get('node_data_file', '~/node_data/nodes.txt')
+node_data_file = os.environ.get('node_data_file', '/app/node_data/nodes.txt')
 
 # Version
 with open('version.txt') as vf:

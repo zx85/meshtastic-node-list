@@ -8,7 +8,7 @@ def parse_feed(feed: str):
     """
 
     rows = []
-    field_list_filter=[0,1,3,4,6,7,8,9,10,11,14,15,17,18] 
+    field_list_filter=[0,1,3,4,6,7,8,9,10,11,14,15,17] 
     for idx,line in enumerate(feed):
         # Only process lines that look like table rows
         if line.strip().startswith("│") and "─" not in line:

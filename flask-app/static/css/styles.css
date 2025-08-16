@@ -45,11 +45,11 @@ th {
     position: sticky;
     top: 0;
     background-color: #4f46e5;
-    padding: 8px 12px;
+    padding: 6px 10px;
 }
 
 td {
-    font-size: 0.85rem;
+    font-size: 0.80rem;
     color: #111827;
     padding: 8px 12px;
 }

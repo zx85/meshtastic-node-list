@@ -25,9 +25,20 @@ eg.
 ```
    .
    .
-      - node_data_file="/app/node_data/nodes.txt"
+      - node_data_file=/app/node_data/nodes.txt
     volumes:
       - /home/james/node_data:/app/node_data
+```
+
+If you want to run it locally, you can do (for example):
+
+```
+export node_data_file=/home/james/node_data/nodes.txt
+cd flask-app
+python venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python app.py
 ```
 
 That's about it, so far. Hopefully it'll end up being nicely formatted and sortable and all that.

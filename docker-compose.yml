@@ -6,8 +6,8 @@ services:
     ports:
       - "5000:5000"
     environment:
-      - SECRET_KEY='this-key-is-secret-then'
-      - node_data_file='nodes.txt'
+      - SECRET_KEY=this-key-is-secret-then
+      - node_data_file=/app/node_data/nodes.txt
     volumes:
       - /home/james/node_data:/app/node_data
       # - ./flask-app/static:/app/static

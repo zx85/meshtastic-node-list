@@ -27,7 +27,7 @@ last_loaded = 0
 CACHE_TIMEOUT = 60  # seconds
 
 # Get the other environment variables
-node_file_name = os.environ.get('node_file_name', '/home/james/node_data/nodes.txt')
+node_data_file = os.environ.get('node_data_file', '~/node_data/nodes.txt')
 
 # Version
 with open('version.txt') as vf:
@@ -40,7 +40,7 @@ def load_entries():
     
     # If cache expired or never loaded, reload file
     if entries_cache is None or now - last_loaded > CACHE_TIMEOUT:
-        with open(node_file_name, "r") as f:
+        with open(node_data_file, "r") as f:
             entries_cache = [line.strip() for line in f if line.strip() and "│" in line.strip()]
         last_loaded = now
         print("File reloaded at", time.strftime("%X"))  # For debugging

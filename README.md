@@ -25,9 +25,9 @@ eg.
 ```
    .
    .
-      - node_data_file='nodes.txt'
+      - node_data_file="/app/node_data/nodes.txt"
     volumes:
-      - /home/james/node_data:app/node_data
+      - /home/james/node_data:/app/node_data
 ```
 
 That's about it, so far. Hopefully it'll end up being nicely formatted and sortable and all that.

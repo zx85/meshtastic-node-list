@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Meshtastic nodes visible from jamonamagnett</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+</head>
+<body>
+    <h1>Meshtastic nodes</h1>
+    <h3>visible from jamonamagnet</h2>
+    <table>
+        <thead>
+            <tr>
+                {% for h in headers %}
+                    {% if h == "N" %}
+                        <th></th>
+                    {% elif h == "Latitude" %}
+                        <th class="td-center">Lat</th>
+                    {% elif h == "Longitude" %}
+                        <th class="td-center">Long</th>
+                    {% elif h == "Altitude" %}
+                        <th class="td-center">Alt</th>
+                    {% elif h == "Battery" %}
+                        <th class="td-center">🔋</th>
+                    {% elif h in ['AKA','Role','Dist','SNR','Hops','Since'] %}
+                        <th class="td-center">{{ h }}</th>
+                    {% else %}
+                        <th>{{ h }}</th>
+                    {% endif %}
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% set center_indexes = [0,2,5,6,7,8,11,13] %}
+            {% for row in data %}
+            <tr>
+                {% for idx, cell in enumerate(row) %}
+                    {% set cell_class = "" %}
+                    {% if idx in center_indexes %}
+                        {% set cell_class = "td-center" %}
+                    {% endif %}
+                    {% if headers[idx] == "Battery" %}
+                        <td class='td-center'>
+                        {% set battery_val = cell.replace('%','')|int %}
+                        {% if "N/A" in cell %}
+                            <span class="badge role-na">{{ cell }}</span>
+                        {% elif 'Powered' in cell %}
+                            <span class="badge battery-powered">⚡</span>
+                        {% else %}
+                            {% if battery_val >= 75 %}
+                                <span class="badge battery-high">{{ cell }}</span>
+                            {% elif battery_val >= 40 %}
+                                <span class="badge battery-medium">{{ cell }}</span>
+                            {% else %}
+                                <span class="badge battery-low">{{ cell }}</span>
+                            {% endif %}
+                        {% endif %}
+                        </td>
+                    {% elif headers[idx] == "SNR" %}
+                        <td class="td-center">
+                        {% if "N/A" in cell %}
+                            <span class="badge role-na">
+                        {% else %}
+                            {% set snr_val = cell.replace(' dB','')|int %}
+                            {% if snr_val >= -5 %}
+                                <span class="badge snr-good">
+                            {% elif snr_val >= -15 %}
+                                <span class="badge snr-average">
+                            {% else %}
+                                <span class="badge snr-poor">
+                            {% endif %}
+                            {{ snr_val }}</span>
+                        {% endif %}
+                        </td>
+                    {% elif headers[idx] == "Role" %}
+                        <td class="td-center">
+                        {% if cell == "CLIENT" %}
+                            <span class="badge role-client">
+                        {% elif cell == "CLIENT_MUTE" %}
+                            <span class="badge role-client_mute">
+                        {% elif cell == "TRACKER" %}
+                            <span class="badge role-tracker">
+                        {% elif cell == "REPEATER" %}
+                            <span class="badge role-repeater">
+                        {% elif cell == "ROUTER" %}
+                            <span class="badge role-router">
+                        {% elif cell == "N/A" %}
+                            <span class="badge role-na">
+                        {% else %}
+                            <span class="badge role-other">
+                        {% endif %}
+                        {{ cell }}</span></td>
+                    {% elif headers[idx] == "Since" %}
+                        <td class="td-center">{{ cell.replace(' ago', '') }}</td>
+                    {% else %}
+                        <td class="{{ cell_class }}">{{ cell.replace('N/A', '<span class="badge role-na">') }}</td>
+                    {% endif %}
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+<footer>
+    version: {{ version }}
+</footer>
+</html>

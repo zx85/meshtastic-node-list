@@ -1,5 +1,6 @@
 from flask import Flask, request, make_response, jsonify, render_template, send_from_directory, abort, session
 from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo 
 import os
 import time
 import functools
@@ -31,10 +32,10 @@ node_data_file = os.environ.get('node_data_file', '/app/node_data/nodes.txt')
 file_timestamp= os.path.getmtime(node_data_file)
 
 # convert to datetime
-dt = datetime.fromtimestamp(file_timestamp)
+dt = datetime.fromtimestamp(file_timestamp, tz=ZoneInfo("Europe/London"))
 
 # format as string
-last_modified = dt.strftime("%Y-%m-%d %H:%M:%S")
+last_modified = f'{dt.strftime("%Y-%m-%d %H:%M:%S")} UK time'
 
 # Version
 with open('version.txt') as vf:

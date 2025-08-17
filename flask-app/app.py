@@ -28,6 +28,13 @@ CACHE_TIMEOUT = 60  # seconds
 
 # Get the other environment variables
 node_data_file = os.environ.get('node_data_file', '/app/node_data/nodes.txt')
+file_timestamp= os.path.getmtime(node_data_file)
+
+# convert to datetime
+dt = datetime.fromtimestamp(file_timestamp)
+
+# format as string
+last_modified = dt.strftime("%Y-%m-%d %H:%M:%S")
 
 # Version
 with open('version.txt') as vf:
@@ -55,7 +62,7 @@ def log_request():
 def serve_index():
     entries = load_entries()
     headers,data=parse_feed(entries)
-    return render_template('index.html.j2', headers=headers, data=data, version=APP_VERSION, enumerate=enumerate)
+    return render_template('index.html.j2', headers=headers, data=data, version=APP_VERSION, last_modified=last_modified, enumerate=enumerate)
 
 if __name__ == '__main__':
     try:

@@ -25,17 +25,11 @@ logger = logging.getLogger(__name__)
 # Cache variables
 entries_cache = None
 last_loaded = 0
+last_modified=""
 CACHE_TIMEOUT = 60  # seconds
 
 # Get the other environment variables
 node_data_file = os.environ.get('node_data_file', '/app/node_data/nodes.txt')
-file_timestamp= os.path.getmtime(node_data_file)
-
-# convert to datetime
-dt = datetime.fromtimestamp(file_timestamp, tz=ZoneInfo("Europe/London"))
-
-# format as string
-last_modified = f'{dt.strftime("%Y-%m-%d %H:%M:%S")} UK time'
 
 # Version
 with open('version.txt') as vf:
@@ -43,11 +37,17 @@ with open('version.txt') as vf:
     vf.close()
 
 def load_entries():
-    global entries_cache, last_loaded
+    global entries_cache, last_loaded,last_modified
     now = time.time()
     
     # If cache expired or never loaded, reload file
     if entries_cache is None or now - last_loaded > CACHE_TIMEOUT:
+        file_timestamp= os.path.getmtime(node_data_file)
+        # convert to datetime
+        dt = datetime.fromtimestamp(file_timestamp, tz=ZoneInfo("Europe/London"))
+        # format as string
+        last_modified = f'{dt.strftime("%Y-%m-%d %H:%M:%S")} UK time'
+
         with open(node_data_file, "r") as f:
             entries_cache = [line.strip() for line in f if line.strip() and "│" in line.strip()]
         last_loaded = now

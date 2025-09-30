@@ -19,6 +19,12 @@ eg.
 * * * * * /home/james/.local/bin/meshtastic --nodes > /home/james/node_data/nodes.txt
 ```
 
+or, if you've installed meshtastic within a `.venv` environment and have multiple serial devices connected:
+
+```
+/home/james/.venv/bin/python -m meshtastic --serial /dev/ttyUSB0 --nodes > /home/james/node_data/nodes.txt
+```
+
 Then, modify the `docker-compose` entries to map the filename and directory where the nodes.txt is stored for use within the app:
 
 eg.

@@ -10,20 +10,28 @@ A simple Flask app that takes the --nodes info from the meshtastic CLI and displ
 
 ## Configuration
 
-The meshtastic CLI has a `--nodes` parameter, which outputs (in a 'pretty' text table) the list of the nodes seen by the meshtastic device, sorted by time last seen.
-
-Once the CLI is installed it's necessary to install a crontab that runs it every minute (or less often if you'd prefer) and output the file to a known location (creating any directories necessary beforehand).
+The meshtastic CLI has a `--nodes` parameter, which outputs (in a 'pretty' text table) the list of the nodes seen by the meshtastic device, sorted by time last seen. This needs to be piped to a file:
 
 eg.
 ```
-* * * * * /home/james/.local/bin/meshtastic --nodes > /home/james/node_data/nodes.txt
+meshtastic --nodes > node_data/nodes.txt
 ```
 
 or, if you've installed meshtastic within a `.venv` environment and have multiple serial devices connected:
 
 ```
-* * * * * /home/james/.venv/bin/python -m meshtastic --serial /dev/ttyUSB0 --nodes > /home/james/node_data/nodes.txt
+.venv/bin/python -m meshtastic --serial /dev/ttyUSB0 --nodes > /home/james/node_data/nodes.txt
 ```
+
+It's best to create a script to write the list to a temporary file and then move it to avoid race conditions, eg:
+```
+#!/usr/bin/bash
+work_dir="/home/james/node_data"
+/home/james/.venv/bin/python -m meshtastic --serial /dev/ttyUSB0 --nodes > ${work_dir}/nodes_tmp.txt 2> ${work_dir}/error.log
+mv ${work_dir}/nodes_tmp.txt ${work_dir}/nodes.txt
+
+```
+
 
 Then, modify the `docker-compose` entries to map the filename and directory where the nodes.txt is stored for use within the app:
 

@@ -1,7 +1,7 @@
 from includes.maths import parse_coord, parse_height, line_of_sight_distance
 
-google_stub='https://www.google.com/maps/search/?api=1&query='
-
+google_prefix='https://www.google.com/maps/place/'
+google_suffix=',12z/data=!4m4!3m3!8m2!3d52.2803!4d0.657!5m1!1e1'
 def parse_feed(feed: str):
     """
     Convert the ASCII table feed into a list of lists:
@@ -32,7 +32,7 @@ def parse_feed(feed: str):
             parts = [cols[i+1].strip() for i in field_list_filter if i < len(cols)]
         # add google maps URL to co-ords
             if idx!=0 and 'N/A' not in coords[0:2]:
-              google_url=f'<A HREF="{google_stub}{parts[5]},{parts[6]}" TARGET="maps">'.replace('°','')
+              google_url=f'<A HREF="{google_prefix}{parts[5]}+{parts[6]}/@{parts[5]},{parts[6]}{google_suffix}" TARGET="maps">'.replace('°','')
               parts[5]=f'{google_url}{parts[5]}, {parts[6]}</A>'
             del parts[6]
             rows.append(parts)

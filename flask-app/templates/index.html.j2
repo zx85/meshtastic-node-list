@@ -81,7 +81,8 @@
                         </td>
                     {% elif headers[idx] == "Role" %}
                         <td class="td-center">
-                        {% if cell == "CLIENT" %}
+                        {% if cell == "N/A" %}
+                            {% set cell = "CLIENT" %}
                             <span class="badge role-client">
                         {% elif cell == "CLIENT_MUTE" %}
                             <span class="badge role-client_mute">
@@ -91,8 +92,6 @@
                             <span class="badge role-repeater">
                         {% elif cell == "ROUTER" %}
                             <span class="badge role-router">
-                        {% elif cell == "N/A" %}
-                            <span class="badge role-na">
                         {% else %}
                             <span class="badge role-other">
                         {% endif %}

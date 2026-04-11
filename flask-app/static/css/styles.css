@@ -82,6 +82,7 @@ td {
 /* Role */
 .role-client { background-color: #3b82f6; }
 .role-client_mute { background-color: #3f567c; }
+.role-client_base { background-color: #280655; }
 .role-tracker { background-color: #16a34a; }
 .role-repeater { background-color: #73137a; }
 .role-router { background-color: #6313aa; }

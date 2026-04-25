@@ -7,10 +7,33 @@ def parse_feed(feed: str):
     Convert the ASCII table feed into a list of lists:
     - First row -> headers
     - Remaining rows -> table data
+
+    nodes.txt renders an ASCII table - current fields are:
+    0  Number
+    1  User
+    2  ID
+    3  AKA
+    4  Hardware
+    5  Pubkey
+    6  Role
+    7  Latitude
+    8  Longitude
+    9  Altitude
+    10 Battery
+   *11 Dist (computed below)
+    12 Channel Util
+    13 TX air util
+    14 SNR
+    15 Hops
+    16 Channel
+    17 Fav
+    18 LastHeard
+    19 Since
     """
 
+
     rows = []
-    field_list_filter=[0,1,3,4,6,7,8,9,10,11,14,15,17] 
+    field_list_filter=[0,1,3,4,6,7,8,9,10,11,14,15,18] 
     for idx,line in enumerate(feed):
         # Only process lines that look like table rows
         if line.strip().startswith("│") and "─" not in line:

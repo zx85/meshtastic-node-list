@@ -9,6 +9,6 @@ services:
       - SECRET_KEY=this-key-is-secret-then
       - node_data_file=/app/node_data/nodes.txt
     volumes:
-      - /home/james/node_data:/app/node_data
+      - /home/james/meshtastic-node-list/node_data:/app/node_data
       # - ./flask-app/static:/app/static
     restart: unless-stopped  # Add restart policy

@@ -97,17 +97,21 @@ def parse_feed(rows):
 
         # Construct table row
         table_row = [
-            i + 1,  # Number
+            str(i + 1),  # Number
             row["long_name"] or row["node_id"],  # User
             row["short_name"] or "N/A",  # AKA
             row["hw_model"] or "N/A",  # Hardware
             role,  # Role
             lat_long,  # Lat/Long
             f"{row['altitude']}m" if row["altitude"] else "N/A",  # Altitude
-            f"{row['battery_level']}%" if row["battery_level"] is not None else "N/A",
+            (
+                f"{row['battery_level']}%"
+                if row["battery_level"] is not None
+                else "N/A"
+            ),  # Battery
             dist,  # Dist
-            row["snr"] if row["snr"] is not None else "N/A",  # SNR
-            row["hops_away"] if row["hops_away"] is not None else "N/A",
+            str(row["snr"]) if row["snr"] is not None else "N/A",  # SNR
+            str(row["hops_away"]) if row["hops_away"] is not None else "N/A",  # Hops
             lh_str,  # LastHeard
             format_since(row["last_heard"]),  # Since
         ]

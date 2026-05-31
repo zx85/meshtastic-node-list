@@ -53,7 +53,7 @@ def parse_feed(rows):
         if row["latitude"] and row["longitude"]:
             l1, l2 = row["latitude"], row["longitude"]
             url = f"{google_prefix}{l1}+{l2}/@{l1},{l2}{google_suffix}"
-            lat_long = f'<A HREF="{url}" TARGET="maps">{l1}, {l2}</A>'
+            lat_long = f'<a href="{url}" class="map-link" data-lat="{l1}" data-lon="{l2}">{l1}, {l2}</a>'
 
         # Distance calculation
         dist = "0m"

@@ -7,9 +7,12 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+
 </head>
 </head>
 <body>
+    <button id="themeToggle" class="theme-toggle">🌓</button>
     <h1>Meshtastic nodes</h1>
     <h3>visible from jamonamagnet</h3>
     <h4><pre>(at {{ last_modified }})</pre></h4>
@@ -106,6 +109,14 @@
             {% endfor %}
         </tbody>
     </table>
+<div id="mapModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <iframe id="mapIframe"></iframe>
+    </div>
+</div>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+
 </body>
 <footer>
     <a href="https://github.com/zx85/meshtastic-node-list" target="_blank">github.com/zx85/meshtastic-node-list</a> - {{ version }}

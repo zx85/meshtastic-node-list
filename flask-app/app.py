@@ -36,6 +36,7 @@ logger = logging.getLogger(__name__)
 # Configuration
 node_db_file = os.environ.get("node_db_file", "/app/node_data/nodes.db")
 meshtastic_device = os.environ.get("MESHTASTIC_DEVICE", "/dev/ttyUSB0")
+GOOGLE_MAPS_API_KEY = os.environ.get("GOOGLE_MAPS_API_KEY", "")
 
 # Initialize Database and Background Poller
 init_db()
@@ -72,6 +73,7 @@ def serve_index():
         version=APP_VERSION,
         last_modified=last_modified,
         enumerate=enumerate,
+        google_maps_api_key=GOOGLE_MAPS_API_KEY,
     )
 
 

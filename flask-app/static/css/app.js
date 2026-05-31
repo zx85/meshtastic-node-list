@@ -24,8 +24,14 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const lat = link.getAttribute('data-lat');
             const lon = link.getAttribute('data-lon');
-            // Use Google Maps Embed URL
-            iframe.src = `https://maps.google.com/maps?q=${lat},${lon}&z=14&output=embed`;
+            
+            if (window.GOOGLE_MAPS_API_KEY) {
+                // Use Official Google Maps Embed API with Key
+                iframe.src = `https://www.google.com/maps/embed/v1/place?key=${window.GOOGLE_MAPS_API_KEY}&q=${lat},${lon}&zoom=14`;
+            } else {
+                // Fallback to keyless embed if variable is missing
+                iframe.src = `https://maps.google.com/maps?q=${lat},${lon}&z=14&output=embed`;
+            }
             modal.style.display = 'block';
         });
     });

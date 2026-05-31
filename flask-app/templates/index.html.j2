@@ -102,7 +102,13 @@
                         {% endif %}
                         {{ cell }}</span></td>
                     {% else %}
-                        <td class="{{ cell_class }}">{{ cell.replace('N/A', '<span class="badge role-na">') }}</td>
+                        <td class="{{ cell_class }}">
+                            {% if cell == "N/A" %}
+                                <span class="badge role-na">N/A</span>
+                            {% else %}
+                                {{ cell | safe }}
+                            {% endif %}
+                        </td>
                     {% endif %}
                 {% endfor %}
             </tr>

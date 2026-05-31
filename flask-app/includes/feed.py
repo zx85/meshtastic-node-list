@@ -4,16 +4,6 @@ from includes.maths import line_of_sight_distance
 google_prefix = "https://www.google.com/maps/place/"
 google_suffix = ",12z/data=!4m4!3m3!8m2!3d52.2803!4d0.657!5m1!1e1"
 
-ROLE_MAP = {
-    0: "client",
-    1: "client_mute",
-    2: "client_base",
-    3: "tracker",
-    4: "repeater",
-    5: "router",
-    6: "router",
-}
-
 
 def format_since(epoch):
     """Calculates a human-readable string for time since epoch."""
@@ -79,14 +69,6 @@ def parse_feed(rows):
                 )
             else:
                 dist = "N/A"
-
-        # Role formatting
-        role_raw = row["role"]
-        try:
-            role_int = int(role_raw)
-            role = ROLE_MAP.get(role_int, "other")
-        except (ValueError, TypeError):
-            role = str(role_raw).lower().replace("role_", "")
 
         # Last Heard string
         lh_str = (

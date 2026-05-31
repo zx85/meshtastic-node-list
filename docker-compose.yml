@@ -5,11 +5,13 @@ services:
       context: ./flask-app
     ports:
       - "5000:5000"
+    devices:
+      - "/dev/ttyUSB0:/dev/ttyUSB0"
     env_file:
       - .env
     environment:
       - SECRET_KEY=this-key-is-secret-then
-      - node_database=/app/node_data/nodes.db
+      - node_db_file=/app/node_data/nodes.db
     volumes:
       - /home/james/meshtastic-node-list/node_data:/app/node_data
       # - ./flask-app/static:/app/static

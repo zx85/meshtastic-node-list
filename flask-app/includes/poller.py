@@ -2,7 +2,7 @@ import threading
 import time
 import logging
 import meshtastic.serial_interface
-from includes.db import upsert_nodes
+from includes.db import upsert_nodes, prune_nodes
 
 logger = logging.getLogger(__name__)
 
@@ -25,9 +25,33 @@ def update_nodes_task(dev_path):
                 logger.error(f"Failed to set node time: {e}")
 
             while True:
-                nodes = interface.nodes
-                if nodes:
-                    upsert_nodes(nodes)
+                current_nodes = interface.nodes
+                if current_nodes:
+                    to_upsert = {}
+                    active_ids = []
+
+                    for num, data in current_nodes.items():
+                        node_id = data.get("user", {}).get("id")
+
+                        if not data.get("lastHeard"):
+                            logger.info(
+                                f"Removing zombie node {node_id or num} from device..."
+                            )
+                            try:
+                                interface.localNode.removeNode(num)
+                            except Exception as e:
+                                logger.error(
+                                    f"Failed device removal for {node_id}: {e}"
+                                )
+                        else:
+                            to_upsert[num] = data
+                            if node_id:
+                                active_ids.append(node_id)
+
+                    if to_upsert:
+                        upsert_nodes(to_upsert)
+                    if active_ids:
+                        prune_nodes(active_ids)
 
                 # Check if 6 hours (21600 seconds) have passed for the reboot cycle
                 if time.time() - last_reboot_time > 21600:

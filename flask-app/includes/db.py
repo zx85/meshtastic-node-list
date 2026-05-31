@@ -78,3 +78,16 @@ def upsert_nodes(nodes_dict):
                 ),
             )
         conn.commit()
+
+
+def prune_nodes(active_node_ids):
+    """Remove nodes from the database that are no longer in the provided list of IDs."""
+    if not active_node_ids:
+        return
+    with get_db_connection() as conn:
+        placeholders = ",".join("?" for _ in active_node_ids)
+        conn.execute(
+            f"DELETE FROM nodes WHERE node_id NOT IN ({placeholders})",
+            list(active_node_ids),
+        )
+        conn.commit()

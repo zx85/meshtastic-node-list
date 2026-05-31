@@ -51,7 +51,7 @@
                         {% set battery_val = cell.replace('%','')|int %}
                         {% if "N/A" in cell %}
                             <span class="badge role-na">{{ cell }}</span>
-                        {% elif 'Powered' in cell %}
+                        {% elif '101' in cell %}
                             <span class="badge battery-powered">⚡</span>
                         {% else %}
                             {% if battery_val >= 75 %}

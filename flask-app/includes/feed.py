@@ -83,7 +83,7 @@ def parse_feed(rows):
             row["long_name"] or row["node_id"],  # User
             row["short_name"] or "N/A",  # AKA
             row["hw_model"] or "N/A",  # Hardware
-            role,  # Role
+            row["role"] or "N/A",  # Role
             lat_long,  # Lat/Long
             f"{row['altitude']}m" if row["altitude"] else "N/A",  # Altitude
             (

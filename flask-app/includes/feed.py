@@ -1,69 +1,116 @@
-from includes.maths import parse_coord, parse_height, line_of_sight_distance
+from datetime import datetime
+from includes.maths import line_of_sight_distance
 
-google_prefix='https://www.google.com/maps/place/'
-google_suffix=',12z/data=!4m4!3m3!8m2!3d52.2803!4d0.657!5m1!1e1'
-def parse_feed(feed: str):
+google_prefix = "https://www.google.com/maps/place/"
+google_suffix = ",12z/data=!4m4!3m3!8m2!3d52.2803!4d0.657!5m1!1e1"
+
+ROLE_MAP = {
+    0: "client",
+    1: "client_mute",
+    2: "client_base",
+    3: "tracker",
+    4: "repeater",
+    5: "router",
+    6: "router",
+}
+
+
+def format_since(epoch):
+    """Calculates a human-readable string for time since epoch."""
+    if not epoch:
+        return "N/A"
+    diff = datetime.now().timestamp() - epoch
+    if diff < 60:
+        return "Just now"
+    if diff < 3600:
+        return f"{int(diff//60)}m ago"
+    if diff < 86400:
+        return f"{int(diff//3600)}h ago"
+    return f"{int(diff//86400)}d ago"
+
+
+def parse_feed(rows):
     """
-    Convert the ASCII table feed into a list of lists:
-    - First row -> headers
-    - Remaining rows -> table data
-
-    nodes.txt renders an ASCII table - current fields are:
-    0  Number
-    1  User
-    2  ID
-    3  AKA
-    4  Hardware
-    5  Pubkey
-    6  Role
-    7  Latitude
-    8  Longitude
-    9  Altitude
-    10 Battery
-   *11 Dist (computed below)
-    12 Channel Util
-    13 TX air util
-    14 SNR
-    15 Hops
-    16 Channel
-    17 Fav
-    18 LastHeard
-    19 Since
+    Convert database rows into a list of lists for the template.
     """
-
-
-    rows = []
-    field_list_filter=[0,1,3,4,6,7,8,9,10,11,14,15,18] 
-    for idx,line in enumerate(feed):
-        # Only process lines that look like table rows
-        if line.strip().startswith("│") and "─" not in line:
-            # Split on │ and strip whitespace
-            cols = line.split("│")
-            coords=[cols[8].strip(),cols[9].strip(),cols[10].strip()]
-            # Geographic wonders to be worked
-            if idx == 0:
-              cols.insert(11,'Dist')
-              cols[8]="Lat/Long"
-            elif idx == 1:
-              cols.insert(11,'0m')
-              home=coords
-            else:
-              if 'N/A' not in coords[0:2]:
-                cols.insert(11,line_of_sight_distance(home,coords))
-              else:
-                cols.insert(11,'N/A')
-            parts = [cols[i+1].strip() for i in field_list_filter if i < len(cols)]
-        # add google maps URL to co-ords
-            if idx!=0 and 'N/A' not in coords[0:2]:
-              google_url=f'<A HREF="{google_prefix}{parts[5]}+{parts[6]}/@{parts[5]},{parts[6]}{google_suffix}" TARGET="maps">'.replace('°','')
-              parts[5]=f'{google_url}{parts[5]}, {parts[6]}</A>'
-            del parts[6]
-            rows.append(parts)
-
     if not rows:
         return [], []
 
-    headers = rows[0]
-    data = rows[1:]
+    headers = [
+        "Number",
+        "User",
+        "AKA",
+        "Hardware",
+        "Role",
+        "Lat/Long",
+        "Altitude",
+        "Battery",
+        "Dist",
+        "SNR",
+        "Hops",
+        "LastHeard",
+        "Since",
+    ]
 
-    return headers, data
+    # Use the first row as the 'Home' reference for distance calculation
+    home_row = rows[0]
+    home_coords = [home_row["latitude"], home_row["longitude"], home_row["altitude"]]
+
+    table_data = []
+    for i, row in enumerate(rows):
+        # Coordinates and Maps link
+        lat_long = "N/A"
+        if row["latitude"] and row["longitude"]:
+            l1, l2 = row["latitude"], row["longitude"]
+            url = f"{google_prefix}{l1}+{l2}/@{l1},{l2}{google_suffix}"
+            lat_long = f'<A HREF="{url}" TARGET="maps">{l1}, {l2}</A>'
+
+        # Distance calculation
+        dist = "0m"
+        if i > 0:
+            if (
+                row["latitude"]
+                and row["longitude"]
+                and home_coords[0]
+                and home_coords[1]
+            ):
+                dist = line_of_sight_distance(
+                    home_coords, [row["latitude"], row["longitude"], row["altitude"]]
+                )
+            else:
+                dist = "N/A"
+
+        # Role formatting
+        role_raw = row["role"]
+        try:
+            role_int = int(role_raw)
+            role = ROLE_MAP.get(role_int, "other")
+        except (ValueError, TypeError):
+            role = str(role_raw).lower().replace("role_", "")
+
+        # Last Heard string
+        lh_str = (
+            datetime.fromtimestamp(row["last_heard"]).strftime("%H:%M:%S")
+            if row["last_heard"]
+            else "N/A"
+        )
+
+        # Construct table row
+        table_row = [
+            i + 1,  # Number
+            row["long_name"] or row["node_id"],  # User
+            row["short_name"] or "N/A",  # AKA
+            row["hw_model"] or "N/A",  # Hardware
+            role,  # Role
+            lat_long,  # Lat/Long
+            f"{row['altitude']}m" if row["altitude"] else "N/A",  # Altitude
+            f"{row['battery_level']}%" if row["battery_level"] is not None else "N/A",
+            dist,  # Dist
+            row["snr"] if row["snr"] is not None else "N/A",  # SNR
+            row["hops_away"] if row["hops_away"] is not None else "N/A",
+            lh_str,  # LastHeard
+            format_since(row["last_heard"]),  # Since
+        ]
+        table_data.append(table_row)
+
+    return headers, table_data

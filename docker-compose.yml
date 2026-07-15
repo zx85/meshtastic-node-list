@@ -16,3 +16,8 @@ services:
       - /home/james/meshtastic-node-list/node_data:/app/node_data
       - ./flask-app/static:/app/static
     restart: unless-stopped  # Add restart policy
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+

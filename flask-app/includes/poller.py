@@ -2,7 +2,7 @@ import threading
 import time
 import logging
 import meshtastic.serial_interface
-from includes.db import upsert_nodes, prune_nodes
+from includes.db import upsert_nodes, prune_nodes, upsert_status
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +25,9 @@ def update_nodes_task(dev_path):
                 logger.error(f"Failed to set node time: {e}")
 
             while True:
+                logger.info("Polling Meshtastic device for node updates...")
                 current_nodes = interface.nodes
+                logger.info(f"Retrieved {len(current_nodes)} nodes from the device.")
                 if current_nodes:
                     to_upsert = {}
                     active_ids = []
@@ -48,10 +50,19 @@ def update_nodes_task(dev_path):
                             if node_id:
                                 active_ids.append(node_id)
 
+
                     if to_upsert:
+                        logger.info(f"Upserting {len(to_upsert)} nodes into the database...")
                         upsert_nodes(to_upsert)
                     if active_ids:
+                        logger.info(f"Pruning {len(active_ids)} nodes from the database...")
                         prune_nodes(active_ids)
+
+                # Update last_checked status ---
+                current_timestamp = int(time.time())
+                logger.info("Updating global status: last_checked")
+                upsert_status('last_checked', current_timestamp)
+
 
                 # Check if 6 hours (21600 seconds) have passed for the reboot cycle
                 if time.time() - last_reboot_time > 21600:
@@ -76,3 +87,4 @@ def update_nodes_task(dev_path):
 def start_poller(dev_path):
     thread = threading.Thread(target=update_nodes_task, args=(dev_path,), daemon=True)
     thread.start()
+

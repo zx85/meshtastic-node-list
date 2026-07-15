@@ -71,11 +71,16 @@ def parse_feed(rows):
                 dist = "N/A"
 
         # Last Heard string
-        lh_str = (
-            datetime.fromtimestamp(row["last_heard"]).strftime("%H:%M:%S")
-            if row["last_heard"]
-            else "N/A"
-        )
+        if row["last_heard"]:
+            dt = datetime.fromtimestamp(row["last_heard"])
+            today_date = datetime.now().date()
+            if dt.date() == today_date:
+                lh_str = dt.strftime("%H:%M:%S") # Date only for 'Today' context
+            else:
+                # For dates not today, show full date and time to maintain context
+                lh_str = dt.strftime("%Y-%m-%d")
+        else:
+            lh_str = "N/A"
 
         # Construct table row
         table_row = [

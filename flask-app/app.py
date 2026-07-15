@@ -56,7 +56,9 @@ def log_request():
 def serve_index():
     with get_db_connection() as conn:
         rows = conn.execute("SELECT * FROM nodes ORDER BY last_heard DESC").fetchall()
-
+        lc = conn.execute("SELECT value FROM status WHERE config = 'last_checked'").fetchone()
+       
+    # Bit that does last_modified for the page, based on the last_heard of the nodes in the database
     last_modified = "N/A"
     if rows:
         # Determine the latest update time from the node list
@@ -65,6 +67,12 @@ def serve_index():
             dt = datetime.fromtimestamp(max_lh, tz=ZoneInfo("Europe/London"))
             last_modified = f'{dt.strftime("%Y-%m-%d %H:%M:%S")} UK time'
 
+    # Bit that does last checked (based on the status table in the config)
+    last_checked = "N/A"
+    if lc and lc[0]:
+        dt = datetime.fromtimestamp(lc[0], tz=ZoneInfo("Europe/London"))
+        last_checked = f'{dt.strftime("%Y-%m-%d %H:%M:%S")} UK time'
+
     headers, data = parse_feed(rows)
     return render_template(
         "index.html.j2",
@@ -72,6 +80,7 @@ def serve_index():
         data=data,
         version=APP_VERSION,
         last_modified=last_modified,
+        last_checked=last_checked,
         enumerate=enumerate,
         google_maps_api_key=GOOGLE_MAPS_API_KEY,
     )

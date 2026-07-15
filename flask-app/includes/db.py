@@ -32,6 +32,13 @@ def init_db():
                 fav INTEGER
             )
         """)
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS status (
+                config TEXT,
+                value INTEGER,
+                PRIMARY KEY (config)
+            )
+        """)        
         conn.commit()
 
 
@@ -80,6 +87,16 @@ def upsert_nodes(nodes_dict):
         conn.commit()
 
 
+def upsert_status(config: str, value: int):
+    """Upserts a status key-value pair into the status table."""
+    with get_db_connection() as conn:
+        # Using INSERT OR REPLACE to handle both creation and updates (upsert)
+        conn.execute("""
+            INSERT OR REPLACE INTO status (config, value) VALUES (?, ?)
+        """, (config, value))
+        conn.commit()
+
+
 def prune_nodes(active_node_ids):
     """Remove nodes from the database that are no longer in the provided list of IDs."""
     if not active_node_ids:
@@ -91,3 +108,4 @@ def prune_nodes(active_node_ids):
             list(active_node_ids),
         )
         conn.commit()
+

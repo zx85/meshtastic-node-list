@@ -21,7 +21,7 @@
         <thead>
             <tr>
                 {% for h in headers %}
-                    {% if h == "N" %}
+                    {% if h == "Number" %}
                         <th></th>
                     {% elif h == "User" %}
                         <th>Name</th>
@@ -35,6 +35,8 @@
                         <th class="td-center">Last Heard</th>
                     {% elif h in ['AKA','Role','Dist','SNR','Hops','Since'] %}
                         <th class="td-center">{{ h }}</th>
+                    {% elif h == "Hardware" %}
+                        {{ '' }}
                     {% else %}
                         <th>{{ h }}</th>
                     {% endif %}
@@ -50,7 +52,9 @@
                     {% if idx in center_indexes %}
                         {% set cell_class = "td-center" %}
                     {% endif %}
-                    {% if headers[idx] == "Battery" %}
+                    {% if headers[idx] == "Hardware" %}
+                       {{ '' }}
+                    {% elif headers[idx] == "Battery" %}
                         <td class='td-center'>
                         {% set battery_val = cell.replace('%','')|int %}
                         {% if "N/A" in cell %}
@@ -84,7 +88,7 @@
                         {% endif %}
                         </td>
                     {% elif headers[idx] == "Role" %}
-                        <td class="td-center">
+                        <td class="td-center" title="{{ row[3] }}"> 
                         {% if cell == "N/A" %}
                             {% set cell = "CLIENT" %}
                             <span class="badge role-client">
@@ -129,3 +133,4 @@
     <a href="https://github.com/zx85/meshtastic-node-list" target="_blank">github.com/zx85/meshtastic-node-list</a> - {{ version }}
 </footer>
 </html>
+
